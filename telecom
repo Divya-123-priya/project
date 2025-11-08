@@ -1,0 +1,144 @@
+SIM Activation Portal – REST API for new SIM activation and KYC validation.
+
+Key Assumptions and Features
+
+    SIM Activation: An endpoint to activate a new SIM card. It requires KYC validation as a prerequisite. If KYC is valid, the SIM is activated; otherwise, it's rejected.
+    KYC Validation: A separate endpoint to validate KYC details (e.g., name, ID number, address). This is mocked for simplicity (in a real app, it might integrate with an external service like a government API or third-party KYC provider).
+    Data Handling: Uses in-memory storage (e.g., HashMaps) for simplicity. In production, you'd use a database (e.g., via Spring Data JPA).
+    Security: Basic; no authentication/authorization implemented (add Spring Security if needed).
+    Error Handling: Basic exception handling with custom responses.
+Structure: Standard Maven-based Spring Boot project structure.
+Endpoints:
+
+    POST /api/kyc/validate: Validates KYC details and returns a validation result.
+    POST /api/sim/activate: Activates a SIM if KYC is valid (requires a KYC validation ID from the previous step).
+
+Models: DTOs for requests/responses (e.g., KycRequest, SimActivationRequest).
+Dependencies: Minimal set in pom.xml for a web app.
+
+Below is an updated version of the Spring Boot project to include a simple web page interface for the SIM Activation Portal. This builds on the existing REST API by adding a frontend using Thymeleaf (a server-side template engine for Spring Boot). The web page will allow users to:
+
+    Submit KYC validation details via a form.
+    Submit SIM activation details (using the KYC validation ID from the previous step) via another form.
+    Display results dynamically using JavaScript (for a better user experience, as it interacts with the REST API via AJAX).
+
+{{
+    Frontend Tech: Thymeleaf for HTML rendering + basic JavaScript (no external frameworks like React for simplicity).
+    Interaction: The web page uses JavaScript's fetch API to call the REST endpoints asynchronously and display responses without full page reloads.
+    Structure: Adds a new controller (WebController) for serving web pages. HTML templates are placed in src/main/resources/templates/.
+    Security/UX: Basic; no advanced styling (you can add CSS/JS libraries like Bootstrap). In production, add authentication and better error handling.
+    Endpoints: The REST API remains unchanged. The web page calls /api/kyc/validate and /api/sim/activate.
+    Testing: Access the web page at http://localhost:8080/ (it will serve an index page with forms).
+}}
+
+Dependencies to Select in Spring Initializr for Your Project
+
+Based on your project structure and requirements (Spring Boot REST API + Thymeleaf web pages with static resources), you should include the following dependencies when generating the project from Spring Initializr:
+
+    Spring Web
+        Provides support for building web applications, including REST APIs and serving web pages.
+
+    Thymeleaf
+        Template engine to render server-side HTML pages. You’re using Thymeleaf templates under templates/.
+
+    Spring Boot DevTools (Optional but Recommended)
+        Enables hot reloads and automatic restarts during development for faster feedback.
+
+    Validation (Spring Boot Starter Validation)
+        Provides JSR-380 (javax.validation) support for request validation (@Valid, @NotBlank, etc.).
+
+    Lombok (Optional)
+        If you want to reduce boilerplate code with annotations like @Getter, @Setter. (You didn’t include it in your code, so optional.)
+
+Summary of selected dependencies:
+
+Dependency            Purpose
+
+Spring Web            Build REST and MVC web app
+
+Thymeleaf             Render HTML templates
+
+Validation            Validate REST requests and form data
+
+Spring Boot DevTools** (Optional)          Faster development cycles with auto restart
+
+Lombok** (Optional)             Boilerplate code reduction
+
+
+Final Project Structure
+
+sim-activation-portal/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── simactivation/
+│   │   │           ├── SimActivationApplication.java   # Main Spring Boot application
+│   │   │           ├── controller/
+│   │   │           │   ├── SimActivationController.java  # REST API controller (KYC + SIM)
+│   │   │           │   └── WebPageController.java       # Web page navigation controller
+│   │   │           ├── service/
+│   │   │           │   └── SimActivationService.java    # Business logic (KYC + SIM activation)
+│   │   │           ├── model/
+│   │   │           │   ├── KycRequest.java
+│   │   │           │   ├── KycValidationResult.java
+│   │   │           │   ├── SimActivationRequest.java
+│   │   │           │   └── SimActivationResponse.java
+│   │   │           └── exception/
+│   │   │               └── SimActivationException.java  # Custom exceptions
+│   │   └── resources/
+│   │       ├── static/
+│   │       │   └── style.css                             # CSS for professional UI
+│   │       │   └── images/                               # Image files for UI (e.g. sim-activation-header.jpg)
+│   │       ├── templates/
+│   │       │   ├── index.html                            # Home page
+│   │       │   ├── customerValidation.html               # KYC validation page
+│   │       │   ├── simValidation.html                    # SIM activation page
+│   │       │   ├── offers.html                            # Offers page
+│   │       │   ├── updateAddress.html                     # Update Address form
+│   │       │   └── updateSuccess.html                     # Address update success confirmation
+│   │       └── application.properties                    # Spring Boot config (optional)
+├── pom.xml                                                # Maven build config with Spring Boot + Thymeleaf dependencies
+└── README.md                                              # (optional) project doc & instructions
+
+
+Add Your Java Classes
+
+    Create packages and add classes:
+        SimActivationApplication.java — main app class with @SpringBootApplication.
+        Model classes for KYC and SIM activation requests/responses.
+        Service class implementing business logic (SimActivationService.java).
+        REST API controller (SimActivationController.java) exposing /api/... endpoints.
+        Web page controller (WebPageController.java) returning Thymeleaf templates for plain URLs.
+
+Add Thymeleaf Templates
+
+    Under src/main/resources/templates/, create:
+        index.html
+        customerValidation.html
+        simValidation.html
+        offers.html
+        updateAddress.html
+        updateSuccess.html
+
+
+Add Static Resources
+
+    Under src/main/resources/static/:
+        Place style.css with your custom CSS.
+        Place images in a subfolder images/ (e.g., sim-activation-header.jpg, kyc-validation.jpg).
+    Reference CSS in templates with Thymeleaf: <link rel="stylesheet" th:href="@{/style.css}" />
+    Use images via relative paths like /images/your-image.jpg.
+
+Open your browser and visit:
+
+http://localhost:8080/
+
+    Navigate between pages using navbar.
+    Test KYC validation and SIM activation forms — they interact with REST endpoints and return results dynamically.
+    Verify CSS and images load correctly.
+    Test on desktop and mobile (responsive UI if Bootstrap or your CSS supports it).
+
+
+
+
